@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chennai Metro</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_plan">Plan</string>
+    <string name="nav_map">Map</string>
+    <string name="nav_tickets">Tickets</string>
+    <string name="nav_profile">Profile</string>
+    <string name="cmrl_full">Chennai Metro Rail Limited</string>
+    <string name="helpline">044-24918220</string>
+    <string name="first_train">05:30 AM</string>
+    <string name="last_train">11:00 PM</string>
+    <string name="peak_frequency">Every 5 min</string>
+    <string name="offpeak_frequency">Every 10 min</string>
+</resources>

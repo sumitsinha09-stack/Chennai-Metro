@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand Colors -->
+    <color name="primary">#0052CC</color>
+    <color name="primary_dark">#003D99</color>
+    <color name="primary_light">#E8F0FE</color>
+    <color name="accent">#E8001D</color>
+    <color name="accent_light">#FEE8EB</color>
+
+    <!-- Metro Lines -->
+    <color name="blue_line">#0052CC</color>
+    <color name="green_line">#1B8B2E</color>
+    <color name="interchange">#F59E0B</color>
+
+    <!-- Backgrounds -->
+    <color name="background">#F0F5FF</color>
+    <color name="surface">#FFFFFF</color>
+
+    <!-- Text -->
+    <color name="text_primary">#0A1628</color>
+    <color name="text_secondary">#607D9F</color>
+
+    <!-- UI -->
+    <color name="divider">#E5EDFF</color>
+
+    <!-- Navigation -->
+    <color name="nav_active">@color/primary</color>
+    <color name="nav_inactive">@color/text_secondary</color>
+
+    <!-- Status -->
+    <color name="status_active">#1B8B2E</color>
+    <color name="status_used">#607D9F</color>
+</resources>
