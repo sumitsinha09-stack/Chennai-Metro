@@ -80,7 +80,7 @@ app/src/main/
 - **Journey Planner** — Station picker (AlertDialog), route finding, fare display, ticket booking
 - **Metro Map** — Blue/Green line station list with interchange markers
 - **My Tickets** — Active/history tabs, QR ticket viewer (BottomSheet + ZXing bitmap)
-- **Profile** — Stats, notifications toggle, service info
+- **Profile** — Stats,notifications toggle,service info
 
 ## Chennai Metro Data
 
