@@ -49,19 +49,7 @@ app/src/main/
 └── AndroidManifest.xml
 ```
 
-## Setup in Android Studio
 
-1. Open Android Studio → **File → New → Project from Version Control** (or copy files manually)
-2. Set minimum SDK to **API 24** (Android 7.0)
-3. Sync Gradle — all dependencies will download automatically
-4. Create vector drawable icons for the menu items (or download Material Icons):
-   - `ic_home`, `ic_navigation`, `ic_train`, `ic_qr_code`, `ic_person`
-   - `ic_arrow_right`, `ic_chevron_right`, `ic_swap`, `ic_plus`, `ic_minus`, `ic_warning`, `ic_inbox`
-   - `ic_map`, `ic_map_pin`
-5. Add Google Maps API key to `AndroidManifest.xml` if using the Maps feature:
-   ```xml
-   <meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_API_KEY"/>
-   ```
 
 ## Key Dependencies (app/build.gradle)
 
@@ -89,11 +77,4 @@ app/src/main/
 - **Interchange stations:** Chennai Central, AG-DMS, Alandur
 - **Fare structure:** ₹10 (0-2 stations) to ₹60 (22+ stations)
 
-## Images Used in This App
 
-All 3 images are in `artifacts/chennai-metro/assets/images/`:
-- `icon.png` — App icon (use as launcher icon)
-- `hero_train.png` — Hero banner on home screen
-- `city_bg.png` — Background for splash/header
-
-Copy these PNG files to `app/src/main/res/drawable/` and reference them in XML.
