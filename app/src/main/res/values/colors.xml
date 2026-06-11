@@ -30,4 +30,7 @@
     <!-- Status -->
     <color name="status_active">#1B8B2E</color>
     <color name="status_used">#607D9F</color>
+
+    <color name="error">#B00020</color>
+    <color name="white">#FFFFFF</color>
 </resources>

@@ -12,6 +12,14 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0.0"
+
+        Properties properties = new Properties()
+        if (project.rootProject.file('local.properties').canRead()) {
+            properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        }
+        def mapsKey = properties.getProperty('MAPS_API_KEY', '')
+        manifestPlaceholders = [mapsApiKey: mapsKey]
+        buildConfigField "String", "MAPS_API_KEY", "\"${mapsKey}\""
     }
 
     buildTypes {
@@ -28,6 +36,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 
@@ -57,4 +66,18 @@ dependencies {
 
     // Maps (Google Maps for nearby stations feature)
     implementation 'com.google.android.gms:play-services-maps:19.0.0'
+    implementation 'com.google.android.libraries.places:places:3.5.0'
+
+    // Lifecycle (ViewModel and LiveData)
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.2'
+
+    // Room
+    implementation 'androidx.room:room-runtime:2.6.1'
+    annotationProcessor 'androidx.room:room-compiler:2.6.1'
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
 }

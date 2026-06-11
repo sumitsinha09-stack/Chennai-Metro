@@ -72,6 +72,22 @@ public class HomeFragment extends Fragment {
                 .addToBackStack(null)
                 .commit()
         );
+
+        view.findViewById(R.id.btn_last_mile).setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new LastMileFragment())
+                        .addToBackStack(null)
+                        .commit()
+        );
+
+        view.findViewById(R.id.btn_safety_center).setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new SafetyCenterFragment())
+                        .addToBackStack(null)
+                        .commit()
+        );
     }
 
     private void setupGreeting() {

@@ -5,24 +5,28 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.cmrl.metro.R;
 import com.cmrl.metro.data.MetroData;
 import com.cmrl.metro.models.Station;
-import java.util.ArrayList;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private RadioGroup rgLines;
-    private LinearLayout llStations;
+    private MapView mapView;
+    private GoogleMap googleMap;
     private String selectedLine = "blue";
 
     @Nullable
@@ -30,84 +34,113 @@ public class MapFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_map, container, false);
+        View view = inflater.inflate(R.layout.fragment_map, container, false);
+        mapView = view.findViewById(R.id.map_view);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
+        return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rgLines    = view.findViewById(R.id.rg_lines);
-        llStations = view.findViewById(R.id.ll_stations);
-
-        renderLine("blue");
-
+        rgLines = view.findViewById(R.id.rg_lines);
         rgLines.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rb_blue_line) {
                 selectedLine = "blue";
             } else if (checkedId == R.id.rb_green_line) {
                 selectedLine = "green";
             }
-            renderLine(selectedLine);
+            drawMetroLine(selectedLine);
         });
     }
 
-    private void renderLine(String lineId) {
-        llStations.removeAllViews();
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        drawMetroLine("blue");
+    }
+
+    private void drawMetroLine(String lineId) {
+        if (googleMap == null) return;
+        googleMap.clear();
+
         List<String> stationIds = lineId.equals("blue")
-            ? MetroData.BLUE_LINE : MetroData.GREEN_LINE;
+                ? MetroData.BLUE_LINE : MetroData.GREEN_LINE;
         String lineColor = lineId.equals("blue")
-            ? MetroData.BLUE_COLOR : MetroData.GREEN_COLOR;
+                ? MetroData.BLUE_COLOR : MetroData.GREEN_COLOR;
 
-        for (int i = 0; i < stationIds.size(); i++) {
-            String stationId = stationIds.get(i);
-            Station station  = MetroData.getStation(stationId);
-            if (station == null) continue;
+        PolylineOptions lineOptions = new PolylineOptions()
+                .width(12)
+                .color(Color.parseColor(lineColor))
+                .geodesic(true);
 
-            boolean isFirst    = i == 0;
-            boolean isLast     = i == stationIds.size() - 1;
-            boolean isTerminal = isFirst || isLast;
+        LatLng firstStation = null;
 
-            View stationView = LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_map_station, llStations, false);
+        for (String id : stationIds) {
+            Station station = MetroData.getStation(id);
+            if (station != null) {
+                LatLng pos = new LatLng(station.getLat(), station.getLon());
+                lineOptions.add(pos);
+                if (firstStation == null) firstStation = pos;
 
-            TextView tvName       = stationView.findViewById(R.id.tv_station_name);
-            View     vDot         = stationView.findViewById(R.id.v_station_dot);
-            View     vLineTop     = stationView.findViewById(R.id.v_line_top);
-            View     vLineBottom  = stationView.findViewById(R.id.v_line_bottom);
-            TextView tvBadge      = stationView.findViewById(R.id.tv_badge);
-
-            tvName.setText(station.getName());
-            tvName.setTextColor(isTerminal
-                ? Color.parseColor(lineColor)
-                : ContextCompat.getColor(requireContext(), R.color.text_primary));
-            tvName.setTypeface(null, isTerminal
-                ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
-
-            vDot.setBackgroundColor(Color.parseColor(
-                isTerminal ? lineColor
-                : station.isInterchange() ? "#F59E0B"
-                : lineColor + "88"
-            ));
-
-            vLineTop.setVisibility(isFirst ? View.INVISIBLE : View.VISIBLE);
-            vLineBottom.setVisibility(isLast ? View.INVISIBLE : View.VISIBLE);
-            vLineTop.setBackgroundColor(Color.parseColor(lineColor));
-            vLineBottom.setBackgroundColor(Color.parseColor(lineColor));
-
-            if (isTerminal) {
-                tvBadge.setVisibility(View.VISIBLE);
-                tvBadge.setText("Terminal");
-                tvBadge.setTextColor(Color.parseColor(lineColor));
-            } else if (station.isInterchange()) {
-                tvBadge.setVisibility(View.VISIBLE);
-                tvBadge.setText("Interchange");
-                tvBadge.setTextColor(Color.parseColor("#F59E0B"));
-            } else {
-                tvBadge.setVisibility(View.GONE);
+                googleMap.addMarker(new MarkerOptions()
+                        .position(pos)
+                        .title(station.getName())
+                        .snippet(station.isInterchange() ? "Interchange Station" : "")
+                        .icon(BitmapDescriptorFactory.defaultMarker(
+                                station.isInterchange() ? BitmapDescriptorFactory.HUE_ORANGE : 
+                                lineId.equals("blue") ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_GREEN
+                        )));
             }
-
-            llStations.addView(stationView);
         }
+
+        googleMap.addPolyline(lineOptions);
+        if (firstStation != null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstStation, 12));
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mapView != null) mapView.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mapView != null) mapView.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 }

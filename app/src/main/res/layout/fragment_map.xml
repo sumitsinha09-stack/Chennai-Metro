@@ -39,7 +39,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/surface">
+        android:background="@color/surface"
+        android:elevation="4dp">
 
         <RadioButton
             android:id="@+id/rb_blue_line"
@@ -51,7 +52,8 @@
             android:button="@null"
             android:gravity="center"
             android:padding="14dp"
-            android:checked="true" />
+            android:checked="true"
+            android:textColor="@color/blue_line" />
 
         <RadioButton
             android:id="@+id/rb_green_line"
@@ -62,22 +64,14 @@
             android:textSize="13sp"
             android:button="@null"
             android:gravity="center"
-            android:padding="14dp" />
+            android:padding="14dp"
+            android:textColor="@color/green_line" />
     </RadioGroup>
 
-    <!-- Station List -->
-    <ScrollView
+    <!-- Map View -->
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent" />
 
-        <LinearLayout
-            android:id="@+id/ll_stations"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="24dp"
-            android:paddingEnd="16dp"
-            android:paddingVertical="12dp" />
-    </ScrollView>
 </LinearLayout>
