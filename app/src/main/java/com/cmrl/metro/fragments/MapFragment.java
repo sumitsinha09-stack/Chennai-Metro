@@ -21,10 +21,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.List;
+import java.util.Objects;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private RadioGroup rgLines;
     private MapView mapView;
     private GoogleMap googleMap;
     private String selectedLine = "blue";
@@ -45,7 +45,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rgLines = view.findViewById(R.id.rg_lines);
+        RadioGroup rgLines = view.findViewById(R.id.rg_lines);
         rgLines.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rb_blue_line) {
                 selectedLine = "blue";
@@ -66,9 +66,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (googleMap == null) return;
         googleMap.clear();
 
-        List<String> stationIds = lineId.equals("blue")
+        List<String> stationIds = Objects.equals(lineId, "blue")
                 ? MetroData.BLUE_LINE : MetroData.GREEN_LINE;
-        String lineColor = lineId.equals("blue")
+        String lineColor = Objects.equals(lineId, "blue")
                 ? MetroData.BLUE_COLOR : MetroData.GREEN_COLOR;
 
         PolylineOptions lineOptions = new PolylineOptions()
@@ -76,14 +76,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .color(Color.parseColor(lineColor))
                 .geodesic(true);
 
-        LatLng firstStation = null;
+        LatLng initialStation = null;
 
         for (String id : stationIds) {
             Station station = MetroData.getStation(id);
             if (station != null) {
                 LatLng pos = new LatLng(station.getLat(), station.getLon());
                 lineOptions.add(pos);
-                if (firstStation == null) firstStation = pos;
+                if (initialStation == null) initialStation = pos;
 
                 googleMap.addMarker(new MarkerOptions()
                         .position(pos)
@@ -91,14 +91,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         .snippet(station.isInterchange() ? "Interchange Station" : "")
                         .icon(BitmapDescriptorFactory.defaultMarker(
                                 station.isInterchange() ? BitmapDescriptorFactory.HUE_ORANGE : 
-                                lineId.equals("blue") ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_GREEN
+                                Objects.equals(lineId, "blue") ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_GREEN
                         )));
             }
         }
 
         googleMap.addPolyline(lineOptions);
-        if (firstStation != null) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstStation, 12));
+        if (initialStation != null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(initialStation, 12));
         }
     }
 

@@ -35,7 +35,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private BottomNavigationView bottomNav;
-    private ExtendedFloatingActionButton fabSos;
     private SafetyRepository safetyRepository;
     private FusedLocationProviderClient fusedLocationClient;
     private SensorManager sensorManager;
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(this::onNavItemSelected);
 
-        fabSos = findViewById(R.id.fab_sos);
+        ExtendedFloatingActionButton fabSos = findViewById(R.id.fab_sos);
         safetyRepository = new SafetyRepository(getApplication());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void setupShakeDetection() {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         accelerationValue = SensorManager.GRAVITY_EARTH;
         lastAccelerationValue = SensorManager.GRAVITY_EARTH;
         shake = 0.00f;
@@ -82,13 +80,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-            String locationUrl = "I need help! My location: ";
+            StringBuilder sb = new StringBuilder("I need help! My location: ");
             if (location != null) {
-                locationUrl += "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
+                sb.append("https://maps.google.com/?q=")
+                  .append(location.getLatitude())
+                  .append(",")
+                  .append(location.getLongitude());
             } else {
-                locationUrl += "Location unavailable.";
+                sb.append("Location unavailable.");
             }
-            sendSOSToContacts(locationUrl);
+            sendSOSToContacts(sb.toString());
         });
     }
 
@@ -109,6 +110,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 safetyRepository.getAllContacts().removeObserver(this);
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (sensorManager != null) {
+            sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     @Override
